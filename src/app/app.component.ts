@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,19 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'angular-change-detection';
+
+  offsetXObs$: BehaviorSubject<number>;
+
+  constructor(private _zone: NgZone) {}
+
+  trackObs(mouseClickedDrag$: Observable<MouseEvent>) {
+    this.offsetXObs$ = new BehaviorSubject(0);
+    this._zone.runOutsideAngular(() => {
+      mouseClickedDrag$
+      .subscribe((val: MouseEvent) => {
+        this.offsetXObs$.next(val.offsetX);
+      })
+    });
+  }
+
 }
